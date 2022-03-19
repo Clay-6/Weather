@@ -26,10 +26,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let data: Value = serde_json::from_str(response.as_str())?;
         let weather = &data["weather"][0]["description"];
-        let temp = &data["main"]["temp"];
+        let temperature = &data["main"]["temp"];
 
         println!("Weather description: {}", weather);
-        println!("Temperature: {}°C\n", temp);
+        println!("Temperature: {}°C\n", temperature);
     }
     Ok(())
 }
