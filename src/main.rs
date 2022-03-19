@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use std::collections::HashMap;
+use serde_json::Value;
 use std::env;
 use std::io::{self, Write};
 
@@ -23,7 +23,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, API_KEY, city);
         let response = reqwest::blocking::get(request_url)?.text()?;
-        println!("{:?}\n", response);
+
+        let data: Value = serde_json::from_str(response.as_str())?;
+        let weather = &data["weather"][0]["description"];
+        let temp = &data["main"]["temp"];
+
+        println!("Weather description: {}", weather);
+        println!("Temperature: {}°C\n", temp);
     }
     Ok(())
 }
