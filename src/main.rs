@@ -1,11 +1,12 @@
 #![allow(non_snake_case)]
 use std::collections::HashMap;
+use std::env;
 use std::io::{self, Write};
 
-const API_KEY: &str = "a3fa1bfa682d5b4f93efe3abd290edd1";
-const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let API_KEY = env::var("WEATHER_API_KEY").unwrap();
+    const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
+
     loop {
         let mut buffer = String::new();
         print!("Enter a city name or type 'quit' to exit: ");
@@ -21,7 +22,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, API_KEY, city);
-
         let response = reqwest::blocking::get(request_url)?.text()?;
         println!("{:?}\n", response);
     }
