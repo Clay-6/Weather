@@ -3,7 +3,8 @@ use serde_json::Value;
 use std::env;
 use std::io::{self, Write};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let API_KEY = env::var("WEATHER_API_KEY").unwrap();
     const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
@@ -22,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, API_KEY, city);
-        let response = reqwest::blocking::get(request_url)?.text()?;
+        let response = reqwest::get(request_url).await?.text().await?;
 
         let data: Value = serde_json::from_str(response.as_str())?;
         let weather = &data["weather"][0]["description"];
