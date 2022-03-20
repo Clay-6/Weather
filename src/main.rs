@@ -1,11 +1,10 @@
-#![allow(non_snake_case)]
 use serde_json::Value;
 use std::env;
 use std::io::{self, Write};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let API_KEY = env::var("WEATHER_API_KEY").unwrap();
+    let api_key = env::var("WEATHER_API_KEY").unwrap();
     const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
     loop {
@@ -22,7 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             break;
         }
 
-        let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, API_KEY, location);
+        let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, api_key, location);
         let response = reqwest::get(request_url).await?.text().await?;
 
         let data: Value = serde_json::from_str(response.as_str())?;
