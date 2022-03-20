@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         println!(
             "Weather description: {}\n\
-            Temperature: {}℃\n",
+            Temperature: {}⁰C\n",
             weather, temperature
         );
     }
