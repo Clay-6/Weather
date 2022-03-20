@@ -29,8 +29,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let weather = &data["weather"][0]["description"];
         let temperature = &data["main"]["temp"];
 
-        println!("Weather description: {}", weather);
-        println!("Temperature: {}°C\n", temperature);
+        println!(
+            "Weather description: {}\n\
+            Temperature: {}",
+            weather, temperature
+        );
     }
     Ok(())
 }
