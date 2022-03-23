@@ -37,10 +37,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .read_line(&mut input)
             .expect("Failed to read line.");
 
-        let location = input.trim().to_lowercase();
-        if location == String::from("quit") {
-            break;
-        }
+        let location = match input.trim().to_lowercase().as_str() {
+            "quit" => break,
+            s => String::from(s),
+        };
 
         let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, api_key, location);
         let response = reqwest::get(request_url).await?.text().await?;
