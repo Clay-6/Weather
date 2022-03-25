@@ -26,6 +26,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Temperature: {}⁰C\n",
             weather, temperature
         );
+        
+        std::process::exit(0);
     }
 
     loop {
