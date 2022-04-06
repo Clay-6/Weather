@@ -1,20 +1,22 @@
-#![allow(non_snake_case)]
-
-use serde_json::Value;
+use clap::Parser;
 use std::env;
 use std::io::{self, Write};
 
-static BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
+const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
+
+#[derive(Debug, Parser)]
+struct Args {
+    location: Option<String>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key = env::var("WEATHER_API_KEY").unwrap();
 
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
-        let location = &args[1];
-        ShowData(&api_key, location).await?;
-
+    let args = Args::parse();
+    if let Some(location) = args.location {
+        let (temp, desc) = weather::get_data(BASE_URL, &api_key, &location).await?;
+        println!("Temperature: {temp}\nDescription: {desc}");
         std::process::exit(0);
     }
 
@@ -32,25 +34,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             s => String::from(s),
         };
 
-        ShowData(&api_key, &location).await?;
+        let (temp, desc) = weather::get_data(BASE_URL, &api_key, &location).await?;
+        println!("Temperature: {temp}\nDescription: {desc}");
     }
 
-    Ok(())
-}
-
-async fn ShowData(api_key: &String, location: &String) -> Result<(), Box<dyn std::error::Error>> {
-    let request_url = format!("{}?appid={}&q={}&units=metric", BASE_URL, api_key, location);
-    let response = reqwest::get(request_url).await?.text().await?;
-    let data: Value = serde_json::from_str(response.as_str())?;
-    let weather = &data["weather"][0]["description"];
-    let temperature = &data["main"]["temp"];
-    if weather.is_null() || temperature.is_null() {
-        eprintln!("Data for \"{}\" not found", location);
-    }
-    println!(
-        "Weather description: {}\n\
-        Temperature: {}⁰C\n",
-        weather, temperature
-    );
     Ok(())
 }
