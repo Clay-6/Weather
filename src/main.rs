@@ -1,3 +1,4 @@
+use anyhow::Result;
 use clap::Parser;
 use std::env;
 use std::io::{self, Write};
@@ -10,7 +11,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     let api_key = env::var("WEATHER_API_KEY").unwrap();
 
     let args = Args::parse();
