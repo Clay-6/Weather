@@ -3,6 +3,7 @@ name = "weather-rs"
 version = "1.0.0"
 edition = "2021"
 authors = ["Clayman"]
+description = "A CLI weather application"
 repository = "https://github.com/Clay-6/Weather-Rs"
 license = "GPL-3.0"
 
