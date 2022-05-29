@@ -4,7 +4,7 @@ Simple command line application to fetch weather data from [`openweathermap.org`
 
 ## Installation
 
-## Through Cargo
+### Through Cargo
 
 Make sure you have [rustup](https://rustup.rs) installed & the latest stable Rust version. Then,
 run the command
@@ -15,7 +15,7 @@ cargo install weather-rs
 
 to install.
 
-## Manual
+### Manual
 
 Download the executable from the [latest GitHub release](https://github.com/Clay-6/Weather-Rs/releases/latest)
 and place it somewhere on your `PATH`
