@@ -1,4 +1,4 @@
-# Weather
+# Weather-Rs
 
 Simple command line application to fetch weather data from `openweathermap.org`'s api
 

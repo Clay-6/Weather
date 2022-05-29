@@ -1,9 +1,10 @@
 mod cli;
+mod config;
 mod utils;
 
 use anyhow::Result;
 use clap::Parser as _;
-use std::env;
+use config::Config;
 use std::io::{self, Write};
 
 use cli::Args;
@@ -12,11 +13,11 @@ const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api_key = env::var("WEATHER_API_KEY").unwrap();
-
+    let config: Config = confy::load("Weather-Rs")?;
     let args = Args::parse();
+
     if let Some(location) = args.location {
-        let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location).await?;
+        let (temp, desc) = utils::get_data(BASE_URL, &config.api_key(), &location).await?;
         println!("Temperature: {temp}\nDescription: {desc}");
         std::process::exit(0);
     }
@@ -35,7 +36,7 @@ async fn main() -> Result<()> {
             s => String::from(s),
         };
 
-        let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location).await?;
+        let (temp, desc) = utils::get_data(BASE_URL, &config.api_key(), &location).await?;
         println!("Temperature: {temp}\nDescription: {desc}");
     }
 
