@@ -25,7 +25,7 @@ async fn main() -> Result<()> {
         Ok(())
     } else {
         if let Some(location) = args.location {
-            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location).await?;
+            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
         }
@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
                 s => String::from(s),
             };
 
-            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location).await?;
+            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
             println!("Temperature: {temp}\nDescription: {desc}");
         }
 
