@@ -5,6 +5,7 @@ mod utils;
 use anyhow::Result;
 use clap::Parser as _;
 use config::Config;
+use ipgeolocate::{Locator, Service};
 use std::io::{self, Write};
 
 use cli::Args;
@@ -28,6 +29,15 @@ async fn main() -> Result<()> {
             let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
+        } else if args.geolocate {
+            let service = Service::IpApi;
+            if let Some(ip) = public_ip::addr().await {
+                let city = Locator::get(ip, service).await?.city;
+                println!("City detected as {city}\n");
+
+                let (temp, desc) = utils::get_data(BASE_URL, &api_key, &city, &args.units).await?;
+                println!("Temperature: {temp}\nDescription: {desc}");
+            }
         }
 
         loop {

@@ -18,4 +18,8 @@ pub struct Args {
     /// Set a key to use in the config
     #[clap(long)]
     pub set_key: Option<String>,
+    /// Get the location using geolocation from your
+    /// IP address
+    #[clap(short, long)]
+    pub geolocate: bool
 }
