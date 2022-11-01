@@ -5,7 +5,6 @@ mod utils;
 use anyhow::Result;
 use clap::Parser as _;
 use config::Config;
-use ipgeolocate::{Locator, Service};
 use std::io::{self, Write};
 
 use cli::Args;
@@ -30,32 +29,32 @@ async fn main() -> Result<()> {
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
         } else if args.geolocate {
-            let service = Service::IpApi;
             if let Some(ip) = public_ip::addr().await {
-                let city = Locator::get(ip, service).await?.city;
-                println!("City detected as {city}\n");
+                let city = geolocation::find(&ip.to_string())?.city;
+                println!("City detected as {city}");
 
                 let (temp, desc) = utils::get_data(BASE_URL, &api_key, &city, &args.units).await?;
+                println!("Temperature: {temp}\nDescription: {desc}")
+            }
+        } else {
+            loop {
+                let mut input = String::new();
+                print!("Enter a place name or type 'quit' to exit: ");
+                io::stdout().flush().unwrap();
+
+                io::stdin()
+                    .read_line(&mut input)
+                    .expect("Failed to read line.");
+
+                let location = match input.trim().to_lowercase().as_str() {
+                    "quit" => break,
+                    s => String::from(s),
+                };
+
+                let (temp, desc) =
+                    utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
                 println!("Temperature: {temp}\nDescription: {desc}");
             }
-        }
-
-        loop {
-            let mut input = String::new();
-            print!("Enter a place name or type 'quit' to exit: ");
-            io::stdout().flush().unwrap();
-
-            io::stdin()
-                .read_line(&mut input)
-                .expect("Failed to read line.");
-
-            let location = match input.trim().to_lowercase().as_str() {
-                "quit" => break,
-                s => String::from(s),
-            };
-
-            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
-            println!("Temperature: {temp}\nDescription: {desc}");
         }
 
         Ok(())
