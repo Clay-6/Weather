@@ -4,7 +4,7 @@ use std::str::FromStr;
 use anyhow::{anyhow, Error, Result};
 use serde_json::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Unit {
     Standard,
     Metric,
