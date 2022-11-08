@@ -26,9 +26,9 @@ impl FromStr for Unit {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "metric" => Ok(Self::Metric),
-            "standard" => Ok(Self::Standard),
-            "imperial" => Ok(Self::Imperial),
+            "metric" | "c" => Ok(Self::Metric),
+            "standard" | "k" => Ok(Self::Standard),
+            "imperial" | "f" => Ok(Self::Imperial),
             _ => Err(anyhow!("Invalid unit")),
         }
     }
