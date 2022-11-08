@@ -13,14 +13,14 @@ const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut config: Config = confy::load("Weather-Rs")?;
+    let mut config: Config = confy::load("Weather-Rs", None)?;
     let args = Args::parse();
 
     let api_key = args.use_key.unwrap_or(config.api_key);
 
     if let Some(new_key) = args.set_key {
         config.api_key = new_key;
-        confy::store("Weather-Rs", config)?;
+        confy::store("Weather-Rs", None, config)?;
 
         Ok(())
     } else {
@@ -30,7 +30,11 @@ async fn main() -> Result<()> {
             std::process::exit(0);
         } else if args.geolocate {
             if let Some(ip) = public_ip::addr().await {
-                let city = geolocation::find(&ip.to_string())?.city;
+                let city = geolocation::find(&ip.to_string())?
+                    .city
+                    .chars()
+                    .filter(|c| *c != '\"')
+                    .collect::<String>();
                 println!("City detected as {city}");
 
                 let (temp, desc) = utils::get_data(BASE_URL, &api_key, &city, &args.units).await?;
