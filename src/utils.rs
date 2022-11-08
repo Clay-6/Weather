@@ -54,6 +54,13 @@ pub async fn get_data(
         eprintln!("Data for \"{}\" not found", location);
         Err(anyhow!("Weather data could not be found"))
     } else {
-        Ok((temperature.to_string(), weather.to_string()))
+        let temp_suffix = match units {
+            Unit::Standard => "⁰K",
+            Unit::Metric => "⁰C",
+            Unit::Imperial => "⁰F",
+        };
+        let mut temp = temperature.to_string();
+        temp.push_str(temp_suffix);
+        Ok((temp, weather.to_string()))
     }
 }
