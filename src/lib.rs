@@ -2,9 +2,10 @@ use core::fmt;
 use std::str::FromStr;
 
 use anyhow::{anyhow, Error, Result};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Unit {
     Standard,
     Metric,
