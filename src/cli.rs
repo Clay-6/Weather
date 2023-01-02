@@ -9,8 +9,8 @@ pub struct Args {
     pub location: Option<String>,
     /// The unit to display temperature in.
     /// Can be `metric`, `imperial`, or `standard`
-    #[clap(short, long, default_value_t = Unit::Standard)]
-    pub units: Unit,
+    #[clap(short, long)]
+    pub units: Option<Unit>,
     /// Override the key set in the configuration
     /// with the one provided
     #[clap(long)]

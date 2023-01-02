@@ -21,7 +21,7 @@ async fn main() -> Result<()> {
     };
     let args = Args::parse();
 
-    let api_key = args.use_key.unwrap_or(config.api_key.clone());
+    let api_key = args.use_key.unwrap_or_else(|| config.api_key.clone());
 
     if let Some(cmd) = args.command {
         match cmd {
@@ -42,8 +42,13 @@ async fn main() -> Result<()> {
         }
     } else {
         if let Some(location) = args.location {
-            let (temp, desc) =
-                weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
+            let (temp, desc) = weather_rs::get_data(
+                BASE_URL,
+                &api_key,
+                &location,
+                &args.units.unwrap_or(config.default_units),
+            )
+            .await?;
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
         } else if args.geolocate {
@@ -55,8 +60,13 @@ async fn main() -> Result<()> {
                     .collect::<String>();
                 println!("City detected as {city}");
 
-                let (temp, desc) =
-                    weather_rs::get_data(BASE_URL, &api_key, &city, &args.units).await?;
+                let (temp, desc) = weather_rs::get_data(
+                    BASE_URL,
+                    &api_key,
+                    &city,
+                    &args.units.unwrap_or(config.default_units),
+                )
+                .await?;
                 println!("Temperature: {temp}\nDescription: {desc}")
             }
         } else {
@@ -74,8 +84,16 @@ async fn main() -> Result<()> {
                     s => String::from(s),
                 };
 
-                let (temp, desc) =
-                    weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
+                let (temp, desc) = weather_rs::get_data(
+                    BASE_URL,
+                    &api_key,
+                    &location,
+                    &args
+                        .units
+                        .clone()
+                        .unwrap_or_else(|| config.default_units.clone()),
+                )
+                .await?;
                 println!("Temperature: {temp}\nDescription: {desc}");
             }
         }
