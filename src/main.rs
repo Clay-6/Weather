@@ -1,6 +1,5 @@
 mod cli;
 mod config;
-mod utils;
 
 use anyhow::Result;
 use clap::Parser as _;
@@ -25,7 +24,7 @@ async fn main() -> Result<()> {
         Ok(())
     } else {
         if let Some(location) = args.location {
-            let (temp, desc) = utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
+            let (temp, desc) = weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
         } else if args.geolocate {
@@ -33,11 +32,11 @@ async fn main() -> Result<()> {
                 let city = geolocation::find(&ip.to_string())?
                     .city
                     .chars()
-                    .filter(|c| *c != '\"')
+                    .filter(|c| *c != '"')
                     .collect::<String>();
                 println!("City detected as {city}");
 
-                let (temp, desc) = utils::get_data(BASE_URL, &api_key, &city, &args.units).await?;
+                let (temp, desc) = weather_rs::get_data(BASE_URL, &api_key, &city, &args.units).await?;
                 println!("Temperature: {temp}\nDescription: {desc}")
             }
         } else {
@@ -56,7 +55,7 @@ async fn main() -> Result<()> {
                 };
 
                 let (temp, desc) =
-                    utils::get_data(BASE_URL, &api_key, &location, &args.units).await?;
+                    weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
                 println!("Temperature: {temp}\nDescription: {desc}");
             }
         }

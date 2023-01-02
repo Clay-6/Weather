@@ -1,6 +1,6 @@
 use clap::Parser;
 
-use crate::utils::Unit;
+use weather_rs::Unit;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
