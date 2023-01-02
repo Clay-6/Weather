@@ -1,7 +1,7 @@
 use core::fmt;
 use std::str::FromStr;
 
-use anyhow::{anyhow, Error, Result};
+use color_eyre::{Report, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -23,14 +23,14 @@ impl fmt::Display for Unit {
 }
 
 impl FromStr for Unit {
-    type Err = Error;
+    type Err = Report;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "metric" | "c" => Ok(Self::Metric),
             "standard" | "k" => Ok(Self::Standard),
             "imperial" | "f" => Ok(Self::Imperial),
-            _ => Err(anyhow!("Invalid unit")),
+            _ => Err(Report::msg("Invalid unit")),
         }
     }
 }
@@ -53,7 +53,7 @@ pub async fn get_data(
     let temperature = &data["main"]["temp"];
     if weather.is_null() || temperature.is_null() {
         eprintln!("Data for \"{}\" not found", location);
-        Err(anyhow!("Weather data could not be found"))
+        Err(Report::msg("Weather data could not be found"))
     } else {
         let temp_suffix = match units {
             Unit::Standard => "⁰K",

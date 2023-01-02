@@ -1,8 +1,8 @@
 mod cli;
 mod config;
 
-use anyhow::Result;
 use clap::Parser as _;
+use color_eyre::{Report, Result};
 use config::Config;
 use std::io::{self, Write};
 
@@ -12,19 +12,38 @@ const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut config: Config = confy::load("Weather-Rs", None)?;
+    let mut config: Config = match confy::load("Weather-Rs", None) {
+        Ok(cfg) => cfg,
+        Err(e) => match e {
+            confy::ConfyError::BadTomlData(_) => Config::default(),
+            e => return Err(Report::msg(e.to_string())),
+        },
+    };
     let args = Args::parse();
 
-    let api_key = args.use_key.unwrap_or(config.api_key);
+    let api_key = args.use_key.unwrap_or(config.api_key.clone());
 
-    if let Some(new_key) = args.set_key {
-        config.api_key = new_key;
-        confy::store("Weather-Rs", None, config)?;
+    if let Some(cmd) = args.command {
+        match cmd {
+            cli::Cmd::Config {
+                api_key,
+                default_units,
+            } => {
+                if let Some(key) = api_key {
+                    config.api_key = key
+                }
+                if let Some(unit) = default_units {
+                    config.default_units = unit
+                }
 
-        Ok(())
+                confy::store("Weather-Rs", None, config)?;
+                Ok(())
+            }
+        }
     } else {
         if let Some(location) = args.location {
-            let (temp, desc) = weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
+            let (temp, desc) =
+                weather_rs::get_data(BASE_URL, &api_key, &location, &args.units).await?;
             println!("Temperature: {temp}\nDescription: {desc}");
             std::process::exit(0);
         } else if args.geolocate {
@@ -36,7 +55,8 @@ async fn main() -> Result<()> {
                     .collect::<String>();
                 println!("City detected as {city}");
 
-                let (temp, desc) = weather_rs::get_data(BASE_URL, &api_key, &city, &args.units).await?;
+                let (temp, desc) =
+                    weather_rs::get_data(BASE_URL, &api_key, &city, &args.units).await?;
                 println!("Temperature: {temp}\nDescription: {desc}")
             }
         } else {

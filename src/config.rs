@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use weather_rs::Unit;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub api_key: String,
     pub default_units: Unit,

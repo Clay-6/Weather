@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 use weather_rs::Unit;
 
@@ -15,11 +15,23 @@ pub struct Args {
     /// with the one provided
     #[clap(long)]
     pub use_key: Option<String>,
-    /// Set a key to use in the config
-    #[clap(long)]
-    pub set_key: Option<String>,
+    #[clap(subcommand)]
+    pub command: Option<Cmd>,
     /// Get the location using geolocation from your
     /// IP address
     #[clap(short, long)]
-    pub geolocate: bool
+    pub geolocate: bool,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum Cmd {
+    /// Edit the program's configuration values
+    Config {
+        /// Set an API key to use in requests
+        #[clap(long)]
+        api_key: Option<String>,
+        /// Set the default units used when displaying info
+        #[clap(long)]
+        default_units: Option<Unit>,
+    },
 }
