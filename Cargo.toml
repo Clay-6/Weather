@@ -1,9 +1,11 @@
 [package]
 name = "weather-rs"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
-authors = ["Clayman"]
+authors = ["Clay66"]
 description = "A CLI weather application"
+keywords = ["cli", "weather", "openweathermap"]
+categories = ["command-line-utilities"]
 repository = "https://github.com/Clay-6/Weather-Rs"
 license = "GPL-3.0"
 
