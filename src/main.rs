@@ -5,6 +5,7 @@ use clap::Parser as _;
 use color_eyre::{Report, Result};
 use config::Config;
 use std::io::{self, Write};
+use tracing::{error, info, warn};
 
 use cli::Args;
 
@@ -12,10 +13,16 @@ const BASE_URL: &str = "http://api.openweathermap.org/data/2.5/weather";
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    tracing_subscriber::fmt().init();
     let mut config: Config = match confy::load("Weather-Rs", None) {
         Ok(cfg) => cfg,
         Err(e) => match e {
-            confy::ConfyError::BadTomlData(_) => Config::default(),
+            confy::ConfyError::BadTomlData(e) => {
+                error!("error loading config data: {}", e);
+                warn!("resetting config to default");
+                confy::store("Weather-Rs", None, Config::default())?;
+                Config::default()
+            }
             e => return Err(Report::msg(e.to_string())),
         },
     };
@@ -35,8 +42,8 @@ async fn main() -> Result<()> {
                 if let Some(unit) = default_units {
                     config.default_units = unit
                 }
-
                 confy::store("Weather-Rs", None, config)?;
+                info!("saved config");
                 Ok(())
             }
         }
@@ -58,7 +65,7 @@ async fn main() -> Result<()> {
                     .chars()
                     .filter(|c| *c != '"')
                     .collect::<String>();
-                println!("City detected as {city}");
+                info!("city detected as {city}");
 
                 let (temp, desc) = weather_rs::get_data(
                     BASE_URL,
